@@ -3,6 +3,8 @@ import { BrowserRouter, Route } from "react-router-dom";
 
 import Main from "./Main";
 
+import "./App.css"
+
 class App extends Component {
   render() {
     return (

@@ -3,12 +3,14 @@ import { Layout, Menu, Icon, notification } from "antd";
 import AppSocket from "../socket";
 import { SOCKET_EVENTS } from "../globals";
 
-import { Route } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 
 import RealTimeGraphs from "./RealtimeGraphs";
+import Cms from "./Cms";
+import AppLoading from "./AppLoading";
+import { AppLoadingComsumer } from "../context/AppLoadProvider";
 
 const { Header, Content, Footer, Sider } = Layout;
-const SubMenu = Menu.SubMenu;
 
 class Main extends Component {
   state = {
@@ -86,75 +88,145 @@ class Main extends Component {
     }
   };
 
+  menuSelect = ({ item, key, selectedKeys }) => {
+    this.props.history.push(key);
+  };
+
   render() {
+    const { pathname } = this.props.location;
     return (
-      <Layout style={{ minHeight: "100vh" }}>
-        <Sider
-          breakpoint="xxl"
-          collapsible
-          collapsed={this.state.collapsed}
-          onCollapse={this.onCollapse}
-        >
-          <div className="logo" />
-          <Menu theme="dark" defaultSelectedKeys={["1"]} mode="inline">
-            <Menu.Item key="1">
-              <Icon type="pie-chart" />
-              <span>Realtime Data</span>
-            </Menu.Item>
-            {/* <Menu.Item key="2">
-              <Icon type="desktop" />
-              <span>CMS Analytics</span>
-            </Menu.Item> */}
-            <SubMenu
-              key="sub1"
-              title={
-                <span>
-                  <Icon type="desktop" />
-                  <span>Analytics</span>
-                </span>
-              }
-            >
-              <Menu.Item key="3">CMS</Menu.Item>
-            </SubMenu>
-            <SubMenu
-              key="sub2"
-              title={
-                <span>
-                  <Icon type="team" />
-                  <span>Team</span>
-                </span>
-              }
-            >
-              <Menu.Item key="6">Team 1</Menu.Item>
-              <Menu.Item key="8">Team 2</Menu.Item>
-            </SubMenu>
-            {/* <Menu.Item key="9">
-              <Icon type="file" />
-              <span>File</span>
-            </Menu.Item> */}
-          </Menu>
-        </Sider>
-        <Layout>
-          <Header style={{ background: "#fff", padding: 0 }} />
-          <Content style={{ margin: "0 16px" }}>
-            <div
-              style={{
-                margin: "16px 0",
-                padding: 24,
-                background: "#fff",
-                minHeight: 360
-              }}
-            >
-              <Route exact path="/a" component={RealTimeGraphs} />
-            </div>
-          </Content>
-          <Footer style={{ textAlign: "center" }}>
-            CBPH Dashboard ©{new Date().getFullYear()} Created by ChatbotPH
-          </Footer>
-        </Layout>
-      </Layout>
+      <AppLoadingComsumer>
+        {({ loadCount }) => {
+          return loadCount > 0 ? (
+            <AppLoading />
+          ) : (
+            <Layout style={{ minHeight: "100vh" }}>
+              <Header className="elevation" style={{ background: "white" }}>
+                <div className="logo" />
+              </Header>
+              <Layout>
+                <Sider
+                  breakpoint="xxl"
+                  collapsible
+                  collapsed={this.state.collapsed}
+                  onCollapse={this.onCollapse}
+                  width={200}
+                >
+                  <Menu
+                    onSelect={this.menuSelect}
+                    theme="dark"
+                    mode="inline"
+                    defaultSelectedKeys={[pathname]}
+                    style={{ height: "100%", borderRight: 0 }}
+                  >
+                    <Menu.Item key="/a">
+                      <Icon type="pie-chart" />
+                      <span>Realtime Data</span>
+                    </Menu.Item>
+                    <Menu.Item key="/a/cms">
+                      <Icon type="pie-chart" />
+                      <span>CMS</span>
+                    </Menu.Item>
+                  </Menu>
+                </Sider>
+                <Layout style={{ padding: "0 24px 24px", background: "#ededef" }}>
+                  <Content
+                    style={{
+                      padding: 17,
+                      paddingBottom: 0,
+                      paddingTop: 30,
+                      margin: 0,
+                      minHeight: 360
+                    }}
+                  >
+                    <Switch>
+                      <Route exact path="/a" component={RealTimeGraphs} />
+                      <Route path="/a/cms" component={Cms} />
+                    </Switch>
+                  </Content>
+                  {/* <Footer style={{ textAlign: "center", padding: 0 }}>
+                    CBPH Dashboard ©{new Date().getFullYear()} Created by
+                    ChatbotPH
+                  </Footer> */}
+                </Layout>
+              </Layout>
+            </Layout>
+          );
+        }}
+      </AppLoadingComsumer>
     );
   }
 }
 
 export default Main;
+
+// <Layout style={{ minHeight: "100vh" }}>
+//     <Header style={{ background: "#fff", padding: 0 }} />
+//     <div className="logo" />
+//   <Sider
+//     style={{ backgroundColor: "white" }}
+//     breakpoint="xxl"
+//     collapsible
+//     collapsed={this.state.collapsed}
+//     onCollapse={this.onCollapse}
+//   >
+//     <Menu
+
+//       theme="light"
+//       defaultSelectedKeys={["1"]}
+//       mode="inline">
+//       <Menu.Item key="1">
+//         <Icon type="pie-chart" />
+//         <span>Realtime Data</span>
+//       </Menu.Item>
+//       {/* <Menu.Item key="2">
+//         <Icon type="desktop" />
+//         <span>CMS Analytics</span>
+//       </Menu.Item> */}
+//       <SubMenu
+//         key="sub1"
+//         title={
+//           <span>
+//             <Icon type="desktop" />
+//             <span>Analytics</span>
+//           </span>
+//         }
+//       >
+//         <Menu.Item key="3">CMS</Menu.Item>
+//       </SubMenu>
+//       <SubMenu
+//         key="sub2"
+//         title={
+//           <span>
+//             <Icon type="team" />
+//             <span>Team</span>
+//           </span>
+//         }
+//       >
+//         <Menu.Item key="6">Team 1</Menu.Item>
+//         <Menu.Item key="8">Team 2</Menu.Item>
+//       </SubMenu>
+//       {/* <Menu.Item key="9">
+//         <Icon type="file" />
+//         <span>File</span>
+//       </Menu.Item> */}
+//     </Menu>
+//   </Sider>
+//   <Layout>
+//     <Content style={{ margin: "0 16px" }}>
+//       <div
+//         style={{
+//           margin: "16px 0",
+//           padding: 24,
+
+//           minHeight: 360
+//         }}
+//       >
+//         <Route exact path="/a" component={RealTimeGraphs} />
+//       </div>
+//     </Content>
+//     <Footer style={{ textAlign: "center" }}>
+//       CBPH Dashboard ©{new Date().getFullYear()} Created by ChatbotPH
+//     </Footer>
+//   </Layout>
+// </Layout>

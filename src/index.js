@@ -5,6 +5,16 @@ import App from "./App";
 import registerServiceWorker from "./registerServiceWorker";
 
 import "./socket";
+import { CmsProvider } from "./context/CmsProvider";
+import { AppLoadingProvider } from "./context/AppLoadProvider";
 
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(
+  <AppLoadingProvider>
+    <CmsProvider>
+      <App />
+    </CmsProvider>
+  </AppLoadingProvider>,
+  document.getElementById("root")
+);
+
 registerServiceWorker();
